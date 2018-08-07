@@ -1,0 +1,193 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["\<\
+Fabian K\[ODoubleDot]ssel, Mainz, \
+ \[Copyright] 2018\
+\>", "Text"],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+Usage of the adaptive subdivision algorithm to find the zero isoline\
+\>", "Title"],
+
+Cell[BoxData[
+ RowBox[{"<<", "AdaptiveGrid`"}]], "Input"],
+
+Cell[CellGroupData[{
+
+Cell["Example", "Chapter"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"f", "[",
+   RowBox[{"x_", ",", "y_"}], "]"}], ":=",
+  RowBox[{
+   RowBox[{"Sin", "[",
+    RowBox[{
+     RowBox[{"2", "y"}], "-", "x"}], "]"}],
+   RowBox[{"Sin", "[",
+    RowBox[{"y", "+",
+     SuperscriptBox["x", "2"]}], "]"}]}]}]], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"res", "=",
+    RowBox[{"Module", "[",
+     RowBox[{
+      RowBox[{"{", "\[IndentingNewLine]",
+       RowBox[{"initgrid", ",", "\[IndentingNewLine]",
+        RowBox[{"xlim", "=",
+         RowBox[{"{",
+          RowBox[{"0", ",", "2", ",", "0.25"}], "}"}]}], ",",
+        "\[IndentingNewLine]",
+        RowBox[{"ylim", "=",
+         RowBox[{"{",
+          RowBox[{
+           RowBox[{"-", "1"}], ",", "1", ",", "0.25"}], "}"}]}], ",",
+        "\[IndentingNewLine]",
+        RowBox[{"depth", "=", "6"}], ",", "\[IndentingNewLine]", "res"}],
+       "\[IndentingNewLine]", "}"}], ",", "\[IndentingNewLine]",
+      "\[IndentingNewLine]",
+      RowBox[{
+       RowBox[{"initgrid", "=",
+        RowBox[{"Table", "[",
+         RowBox[{
+          RowBox[{"{",
+           RowBox[{"x", ",", "y"}], "}"}], ",",
+          RowBox[{"{",
+           RowBox[{"x", ",",
+            RowBox[{
+            "xlim", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}],
+            ",",
+            RowBox[{
+            "xlim", "\[LeftDoubleBracket]", "2", "\[RightDoubleBracket]"}],
+            ",",
+            RowBox[{
+            "xlim", "\[LeftDoubleBracket]", "3", "\[RightDoubleBracket]"}]}],
+           "}"}], ",",
+          RowBox[{"{",
+           RowBox[{"y", ",",
+            RowBox[{
+            "ylim", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}],
+            ",",
+            RowBox[{
+            "ylim", "\[LeftDoubleBracket]", "2", "\[RightDoubleBracket]"}],
+            ",",
+            RowBox[{
+            "ylim", "\[LeftDoubleBracket]", "3", "\[RightDoubleBracket]"}]}],
+           "}"}]}], "]"}]}], ";", "\[IndentingNewLine]",
+       RowBox[{"evaluateOnAdaptiveGrid", "[",
+        RowBox[{"f", ",", "initgrid", ",", "depth"}], "]"}]}]}],
+     "\[IndentingNewLine]", "]"}]}], ";"}],
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]",
+ RowBox[{"Show", "[", "\[IndentingNewLine]",
+  RowBox[{
+   RowBox[{"ContourPlot", "[",
+    RowBox[{
+     RowBox[{"f", "[",
+      RowBox[{"x", ",", "y"}], "]"}], ",",
+     RowBox[{"{",
+      RowBox[{"x", ",", "0", ",", "2"}], "}"}], ",",
+     RowBox[{"{",
+      RowBox[{"y", ",",
+       RowBox[{"-", "1"}], ",", "1"}], "}"}], ",",
+     RowBox[{"ColorFunction", "\[Rule]", "\"\<ThermometerColors\>\""}], ",",
+     RowBox[{"PlotRange", "\[Rule]", "All"}], ",",
+     RowBox[{"PlotLegends", "\[Rule]", "Automatic"}]}], "]"}], ",",
+   "\[IndentingNewLine]",
+   RowBox[{"Graphics", "[", "\[IndentingNewLine]",
+    RowBox[{"{",
+     RowBox[{
+      RowBox[{"RGBColor", "[",
+       RowBox[{"0.45", ",", "0.66", ",", "0.43"}], "]"}], ",",
+      RowBox[{"PointSize", "[", "0.007", "]"}], ",",
+      RowBox[{"Point", "[",
+       RowBox[{"Flatten", "[", "\[IndentingNewLine]",
+        RowBox[{
+         RowBox[{"res", "\[LeftDoubleBracket]",
+          RowBox[{"All", ",", "All", ",", "1"}], "\[RightDoubleBracket]"}],
+         ",", "\[IndentingNewLine]", "1"}], "]"}], "]"}]}],
+     "\[IndentingNewLine]", "}"}], "]"}]}], "\[IndentingNewLine]",
+  "]"}]}], "Input"]
+}]],
+
+Cell["\<\
+res is a list of function evaluations at the corners of a rectangle with:
+{
+  {{x0, y0}, f[x0, y0]},
+  {{x1, y0}, f[x1, y1]},
+  {{x1, y1}, f[x2, y2]},
+  {{x0, y1}, f[x3, y3]}
+}
+
+The corner coordinates {x0, y0} belong to the bottom-left corner, {x1,y0} to \
+the bottom-right corner, {x1,y1} to the top-right corner, and {x0,y1} to the \
+top-left corner. For example:\
+\>", "Text"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"res", "\[LeftDoubleBracket]", "1",
+  "\[RightDoubleBracket]"}]], "Input"]
+}]],
+
+Cell["\<\
+Calculate a bilinear interpolation of the function given the values. Needs to \
+remove duplicates first.\
+\>", "Text"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"interpolatedf", "=",
+   RowBox[{"Interpolation", "[",
+    RowBox[{
+     RowBox[{"DeleteDuplicates", "@",
+      RowBox[{"Flatten", "[",
+       RowBox[{"res", ",", "1"}], "]"}]}], ",",
+     RowBox[{"InterpolationOrder", "\[Rule]", "1"}]}], "]"}]}],
+  ";"}]], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"ContourPlot", "[",
+  RowBox[{
+   RowBox[{"interpolatedf", "[",
+    RowBox[{"x", ",", "y"}], "]"}], ",",
+   RowBox[{"{",
+    RowBox[{"x", ",", "0", ",", "2"}], "}"}], ",",
+   RowBox[{"{",
+    RowBox[{"y", ",",
+     RowBox[{"-", "1"}], ",", "1"}], "}"}], ",",
+   RowBox[{"Contours", "\[Rule]",
+    RowBox[{"{", "0", "}"}]}]}], "]"}]], "Input"]
+}]],
+
+Cell["Compare with the orginal function.", "Text"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"ContourPlot", "[",
+  RowBox[{
+   RowBox[{"f", "[",
+    RowBox[{"x", ",", "y"}], "]"}], ",",
+   RowBox[{"{",
+    RowBox[{"x", ",", "0", ",", "2"}], "}"}], ",",
+   RowBox[{"{",
+    RowBox[{"y", ",",
+     RowBox[{"-", "1"}], ",", "1"}], "}"}], ",",
+   RowBox[{"Contours", "\[Rule]",
+    RowBox[{"{", "0", "}"}]}]}], "]"}]], "Input"]
+}]]
+}]]
+}]]
+}]
+(* End of Notebook Content *)
